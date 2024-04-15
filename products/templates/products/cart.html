@@ -1,0 +1,81 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+{% if not cart_items %}
+    <h2 class="text-center">Your Shopping Cart Is Empty</h2><br>
+    <div class="text-center">
+        <a class="btn btn-primary" href="{% url 'product' %}">Continue Shopping</a>
+    </div>
+
+{% else %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box-element">
+            <a class="btn btn-primary" href="{% url 'product' %}">&#x2190; Continue Shopping</a>
+            <br>
+            <br>
+
+            <table class="table">
+                <tr>
+                    <th><h5>Item: <strong>{{ quantity }}</strong></h5></th>
+                    <th><h5>Total: <strong>${{ total|floatformat:2 }}</strong></h5></th>
+                    <th>
+                        <a style="float:right: margin:5px" class="btn btn-success"
+                           href="{% url 'checkout' %}">Checkout</a>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="box-element">
+            <div class="cart-row">
+                <div style="flex:2"><strong>Item</strong></div>
+                <div style="flex:1"><strong>Price</strong></div>
+                <div style="flex:1"><strong>Quantity</strong></div>
+                <div style="flex:1"><strong>Sub Total</strong></div>
+                <div style="flex:1"><strong>Action</strong></div>
+            </div>
+            {% for cart_item in cart_items %}
+            <div class="cart-row">
+                <div style="flex:2"><img class="row-image" src="{{ cart_item.product.image.url }}">
+                    <a href="{% url 'detail' product_id=cart_item.product.id %}">{{ cart_item.product.name }}</a>
+                </div>
+                <div style="flex:1">${{ cart_item.product.price|floatformat:2 }}</div>
+                <div style="flex:1">
+                    <div class="d-flex align-items-center">
+                        <p class="Quantity">{{ cart_item.quantity }}</p>
+                        <div class="Quantity ml-2">
+                            <a href="{% url 'add_cart' cart_item.product.id %}">
+                                <img class="chg-quantity" src="{% static 'products/images/arrow-up.jpeg' %}">
+                            </a>
+                            <a href="{% url 'remove_cart' cart_item.product.id %}">
+                                <img class="chg-quantity" src="{% static 'products/images/arrow-down.jpeg' %}">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div style="flex:1">${{ cart_item.sub_total }}</div>
+                <div style="flex:1">
+                    <a href="{% url 'remove_cart_item' cart_item.product.id %}" class="btn btn-danger btn-sm">
+                        Remove
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<br>
+<br>
+<br>
+<br>
+{% endblock content %}

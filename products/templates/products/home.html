@@ -1,0 +1,150 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block content %}
+	<!-- Slider -->
+	<section class="section-slide">
+		<div class="wrap-slick1">
+			<div class="slick1">
+				<div class="item-slick1" style="background-image: url({% static 'products/images/slide01.jpeg' %});">
+					<div class="container h-full">
+						<div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
+							<div class="layer-slick1 animated visible-false" data-appear="fadeInDown" data-delay="0">
+								<span class="ltext-105 cl0 txt-center">
+									All in one
+								</span>
+							</div>
+
+							<div class="layer-slick1 animated visible-false" data-appear="fadeInUp" data-delay="800">
+								<h2 class="ltext-105 cl0 txt-center">
+									NEW SEASON
+								</h2>
+							</div>
+
+							<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
+								<a href="{% url 'product' %}" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+									Shop Now
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="item-slick1" style="background-image: url({% static 'products/images/slide02.jpeg' %});">
+					<div class="container h-full">
+						<div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
+							<div class="layer-slick1 animated visible-false" data-appear="rollIn" data-delay="0">
+								<span class="ltext-105 cl0 txt-center">
+									Keep your body glowing with...
+								</span>
+							</div>
+
+							<div class="layer-slick1 animated visible-false" data-appear="lightSpeedIn" data-delay="800">
+								<h2 class="ltext-105 cl0 txt-center">
+									Arabian whitening body milk
+								</h2>
+							</div>
+
+							<div class="layer-slick1 animated visible-false" data-appear="slideInUp" data-delay="1600">
+								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+									Shop Now
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="item-slick1" style="background-image: url({% static 'products/images/slide03.jpeg' %});">
+					<div class="container h-full">
+						<div class="flex-col-l-m h-full p-t-100 p-b-30 respon5">
+						<div class="layer-slick1 animated visible-false" data-appear="rotateInDownLeft" data-delay="0">
+							 <span class="ltext-105 cl0 txt-center">
+								 ABS SkinCare...
+							 </span>
+
+						</div>
+
+
+							<div class="layer-slick1 animated visible-false" data-appear="rotateInUpRight" data-delay="800">
+								<h2 class="ltext-105 cl0 txt-center">
+									We Care About Your Skin
+								</h2>
+							</div>
+
+							<div class="layer-slick1 animated visible-false" data-appear="rotateIn" data-delay="1600">
+								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+									Shop Now
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><br>
+	<!-- Banner -->
+		<h1 style="font-family: 'Montserrat', sans-serif; font-size: 32px; text-align: center; margin-top: 50px;">Our Collections</h1>
+<hr style="width: 50%; margin: 20px auto; border: none; border-top: 1px solid #000;">
+
+<div class="container">
+    <div class="row">
+        {% for product in Products %}
+        <div class="col-sm-6 col-md-4 col-lg-3 p-b-30">
+            <!-- Adjust the column sizes for responsiveness -->
+            <div class="block1 wrap-pic-w">
+                <img src="{{ product.image.url }}" alt="Product Image">
+                <div class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                    <a href="{% url 'detail' product_id=product.id %}">
+                        <span class="block1-name ltext-102 trans-04 p-b-8" style="font-size: 14px;">{{ product.name }}</span>
+                    </a>
+                    <a href="{% url 'product' %}">
+                        <div class="block1-link stext-101 cl0 trans-09">Shop Now</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+	<!-- Product Overview -->
+<h1 style="font-family: 'Montserrat', sans-serif; font-size: 32px; text-align: center; margin-top: 50px;">Best sellers</h1>
+<hr style="width: 50%; margin: 20px auto; border: none; border-top: 1px solid #000;">
+
+
+	<div class="container">
+    <div class="row">
+        {% for product in Products %}
+        <div class="col-sm-6 col-md-4 col-lg-3 p-b-30">
+            <!-- Adjust the column sizes for responsiveness -->
+            <div class="block1 wrap-pic-w">
+                <img src="{{ product.image.url }}" alt="Product Image">
+                <div class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
+                    <a href="{% url 'detail' product_id=product.id %}">
+                        <span class="block1-name ltext-102 trans-04 p-b-8" style="font-size: 14px;">{{ product.name }}</span>
+                    </a>
+                    <a href="{% url 'product' %}">
+                        <div class="block1-link stext-101 cl0 trans-09">Shop Now</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+	<!-- Load more -->
+		<div class="flex-c-m flex-w w-full p-t-45">
+			<a href="{% url 'product' %}" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+				Load More
+			</a>
+		</div>
+	</div>
+ </section>
+
+
+{% endblock content %}

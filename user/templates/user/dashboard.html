@@ -1,0 +1,116 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+
+<div class="container-fluid">
+    {% include 'user/alerts.html' %}
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3" style="background-color: black; color: white;">
+            <h2 class="text-center my-4">Dashboard</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Orders</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Customers</a><br><br><br><br>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-dark btn-black" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span class="text">Log Out</span> </a>
+                </li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Sales</h5>
+                            <p class="card-text">$10,000</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Orders</h5>
+                            <p class="card-text">100</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">New Customers</h5>
+                            <p class="card-text">20</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Pending Orders</h5>
+                            <p class="card-text">5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            Recent Orders
+                        </div>
+                        <div class="card-body">
+                            <!-- Table to display recent orders -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Customer Name</th>
+                                        <th>Order Date</th>
+                                        <th>Total Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sample order data -->
+                                    <tr>
+                                        <td>1</td>
+                                        <td>John Doe</td>
+                                        <td>2024-04-15</td>
+                                        <td>$150</td>
+                                        <td>Shipped</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Jane Smith</td>
+                                        <td>2024-04-14</td>
+                                        <td>$200</td>
+                                        <td>Processing</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+{% endblock content %}

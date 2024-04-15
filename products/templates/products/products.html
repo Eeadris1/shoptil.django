@@ -1,0 +1,84 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+<h1 style="font-family: 'Montserrat', sans-serif; font-size: 32px; text-align: center; margin-top: 50px;">ABS Store</h1>
+<hr style="width: 50%; margin: 20px auto; border: none; border-top: 1px solid #000;">
+{% if 'search' in request.path %}
+<div>
+    <h6 class="title-page">Search Result:</h6>
+</div>
+
+{% else %}
+<h2 class="title-page">Our Products</h2>
+{% endif %}
+<br>
+
+
+<div class="row isotope-grid">
+    {% if products %}
+    {% for product in products %}
+    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+        <!-- Block2 -->
+        <div class="Block2">
+            <div class="block2-pic hov-img0">
+                <img src="{{ product.image.url }}" alt="IMG-PRODUCT">
+                <a href="{% url 'detail' product.id %}" class="Block2-btn">View Details</a>
+            </div>
+
+            <div class="block2-txt flex-w flex-t p-t-14">
+                <div class="block2-txt-child1 flex-col-l">
+                    <a href="{% url 'detail' product_id=product.id %}" class="custom-link">{{ product.name }}</a>
+                    <span class="stext-105 cl3">${{ product.price|floatformat:2 }}</span>
+                </div>
+
+                <div class="block2-txt-child2 flex-r p-t-3">
+                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+                        <img class="icon-heart1 dis-block trans-04" src="{% static 'products/images/icons/icon-heart-01.png' %}" alt="ICON">
+                        <img class="icon-heart2 dis-block trans-04 ab-t-l" src="{% static 'products/images/icons/icon-heart-02.png' %}" alt="ICON">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div>
+        <h2>No result found</h2>
+    </div>
+     {% endif %}
+</div>
+
+<!-- Pagination -->
+<div class="container">
+    <main role="main" class="col-md-9">
+        <nav class="mt-4 d-flex justify-content-center" aria-label="Page navigation sample">
+            {% if products.has_other_pages %}
+            <ul class="pagination">
+                {% if products.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                {% endif %}
+
+                {% for i in products.paginator.page_range %}
+                {% if products.number == i %}
+                <li class="page-item active"><a class="page-link" href="">{{ i }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}">Next</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </nav>
+    </main> <!-- col.// -->
+</div> <!-- /.container -->
+<br>
+{% endblock content %}
