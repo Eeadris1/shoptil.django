@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist  # Import ObjectDoesNotExi
 from django.shortcuts import render,redirect, get_object_or_404
 from products.models import Product
 from .models import Cart, CartItem
+from django.contrib.auth.decorators import login_required
 
 
 # This function generates or retrieves a unique cart identifier associated with the user's session.
@@ -19,62 +20,96 @@ def _cart_id(request):
 
 # This function adds a product to the shopping cart.
 def add_cart(request, product_id):
+    current_user = request.user
     product = Product.objects.get(id=product_id)  #this Retrieve the product object based on the provided product_id.
+    # if user is authenticated
+    if current_user.is_authenticated:
 
-    # Try to retrieve the cart associated with the user's session.
-    try:
+        # Try to retrieve the cart item for the product.
+        try:
+            # If the item already exists in the cart, increase its quantity by 1.
+            cart_item = CartItem.objects.get(product=product, user=current_user)
+            cart_item.quantity += 1  # cart_item.quantity = cart_item.quantity +1
+            cart_item.save()
 
-        # Get the cart using the cart_id stored in the session.
-        # or this will get the cart using the cart id present in the session
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-    except Cart.DoesNotExist:
+        # If the item doesn't exist in the cart, create a new cart item with quantity 1.
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(
+                product=product,
+                quantity=1,
+                user=current_user,
 
-        # If no cart exists, create a new one with a unique cart_id.
-        cart = Cart.objects.create(
-            cart_id = _cart_id(request)
-        )
-    # Save the cart to the database.
-    cart.save()
+            )
+            cart_item.save()
 
-    # Try to retrieve the cart item for the product.
-    try:
-        # If the item already exists in the cart, increase its quantity by 1.
-        cart_item = CartItem.objects.get(product=product, cart=cart)
-        cart_item.quantity += 1   #cart_item.quantity = cart_item.quantity +1
-        cart_item.save()
+        # Redirect the user to the cart page.
+        return redirect('cart')
 
-    # If the item doesn't exist in the cart, create a new cart item with quantity 1.
-    except CartItem.DoesNotExist:
-        cart_item = CartItem.objects.create(
-            product = product,
-            quantity = 1,
-            cart = cart,
+     # if the user is not authenticated
+    else:
+        # Try to retrieve the cart associated with the user's session.
+        try:
 
-        )
-        cart_item.save()
+            # Get the cart using the cart_id stored in the session.
+            # or this will get the cart using the cart id present in the session
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+        except Cart.DoesNotExist:
 
-    # Redirect the user to the cart page.
-    return redirect('cart')
+            # If no cart exists, create a new one with a unique cart_id.
+            cart = Cart.objects.create(
+                cart_id = _cart_id(request)
+            )
+        # Save the cart to the database.
+        cart.save()
+
+        # Try to retrieve the cart item for the product.
+        try:
+            # If the item already exists in the cart, increase its quantity by 1.
+            cart_item = CartItem.objects.get(product=product, cart=cart)
+            cart_item.quantity += 1   #cart_item.quantity = cart_item.quantity +1
+            cart_item.save()
+
+        # If the item doesn't exist in the cart, create a new cart item with quantity 1.
+        except CartItem.DoesNotExist:
+            cart_item = CartItem.objects.create(
+                product = product,
+                quantity = 1,
+                cart = cart,
+
+            )
+            cart_item.save()
+
+        # Redirect the user to the cart page.
+        return redirect('cart')
 
 
 # This function removes a product from the shopping cart one by one.
-def remove_cart(request, product_id):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
+def remove_cart(request, product_id, cart_item_id):
     product = get_object_or_404(Product, id=product_id)
-    cart_item = CartItem.objects.get(product=product, cart=cart)
-    if cart_item.quantity > 1:
-        cart_item.quantity -= 1
-        cart_item.save()
-    else:
-        cart_item.delete()
+    try:
+        if request.user.is_authenticated:
+            cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
+        else:
+            cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
+        if cart_item.quantity > 1:
+            cart_item.quantity -= 1
+            cart_item.save()
+        else:
+            cart_item.delete()
+    except CartItem.DoesNotExist:
+        pass
     return redirect('cart')
 
 
 # This function removes all identical product from the shopping cart at once using the remove btn.
-def remove_cart_item(request, product_id):
-    cart = Cart.objects.get(cart_id=_cart_id(request))
+def remove_cart_item(request, product_id, cart_item_id,):
     product = get_object_or_404(Product, id=product_id)
-    cart_item =CartItem.objects.get(product=product, cart=cart)
+    if request.user.is_authenticated:
+        cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
+    else:
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
     cart_item.delete()
     return redirect('cart')
 
@@ -82,11 +117,14 @@ def remove_cart_item(request, product_id):
 # This function retrieves the cart items associated with the user's session and calculates the total price and quantity.
 def cart(request, total=0, quantity=0, cart_items=None):
     try:
-        # Try to retrieve the cart associated with the user's session.
-        cart = Cart.objects.get(cart_id=_cart_id(request))
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user=request.user, is_active=True)
+        else:
+            # Try to retrieve the cart associated with the user's session.
+            cart = Cart.objects.get(cart_id=_cart_id(request))
 
-        # Retrieve all active cart items associated with the cart.
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+            # Retrieve all active cart items associated with the cart.
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
         # Iterate through each cart item to calculate the total price and quantity.
         for cart_item in cart_items:
@@ -107,13 +145,17 @@ def cart(request, total=0, quantity=0, cart_items=None):
     return render(request, 'products/cart.html', context )
 
 
+@login_required(login_url='login')
 def checkout(request, total=0, quantity=0, cart_items=None, tax=0, grand_total=0):
     try:
-        # Try to retrieve the cart associated with the user's session.
-        cart = Cart.objects.get(cart_id=_cart_id(request))
+        if request.user.is_authenticated:
+            cart_items = CartItem.objects.filter(user=request.user, is_active=True)
+        else:
+            # Try to retrieve the cart associated with the user's session.
+            cart = Cart.objects.get(cart_id=_cart_id(request))
 
-        # Retrieve all active cart items associated with the cart.
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+            # Retrieve all active cart items associated with the cart.
+            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
 
         # Iterate through each cart item to calculate the total price and quantity.
         for cart_item in cart_items:

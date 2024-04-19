@@ -13,18 +13,60 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 
+from cart.views import _cart_id
+from cart.models import Cart, CartItem
+from django.contrib.auth import authenticate, login as auth_login
+import requests
+
 
 def login(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
 
-        user = auth.authenticate(email=email, password=password)
+        user = authenticate(email=email, password=password)
 
         if user is not None:
-            auth.login(request, user)
+            try:
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+
+                if is_cart_item_exists:
+                    cart_items = CartItem.objects.filter(cart=cart)
+
+                    # Get existing cart items for the logged-in user
+                    user_cart_items = CartItem.objects.filter(user=user)
+
+                    for cart_item in cart_items:
+                        # Check if the product is already in the user's cart
+                        existing_item = user_cart_items.filter(product=cart_item.product).first()
+                        if existing_item:
+                            # If the product already exists, increase the quantity
+                            existing_item.quantity += cart_item.quantity
+                            existing_item.save()
+                        else:
+                            # If the product doesn't exist, assign it to the user
+                            cart_item.cart = None
+                            cart_item.user = user
+                            cart_item.save()
+
+            except Cart.DoesNotExist:
+                pass
+
+            auth_login(request, user)
             messages.success(request, 'You are now logged in.')
-            return redirect('dashboard')
+            url = request.META.get('HTTP_REFERER')
+            try:
+                # I INSTALL AND IMPORT THE REQUEST LIBRARY TO DO THIS
+                query = requests.utils.urlparse(url).query
+                # next=/cart/checkout
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    next_page = params['next']
+                    return redirect(next_page)
+
+            except:
+                return redirect('dashboard')
         else:
             messages.error(request, 'Invalid login credentials')
             return redirect('login')
@@ -35,7 +77,7 @@ def login(request):
 def logout(request):
     auth.logout(request)
     messages.success(request, 'You are logged out.')
-    return redirect('login')
+    return redirect('home')
 
 
 def register(request):

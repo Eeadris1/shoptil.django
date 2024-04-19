@@ -9,30 +9,14 @@ from django.contrib.auth.decorators import login_required
 
 
 def home(request):
-    # Calculate the cart quantity
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        quantity = sum(item.quantity for item in cart_items)
-    except Cart.DoesNotExist:
-        quantity = 0  # If cart doesn't exist, set quantity to 0
 
     context = {
         'Products': Product.objects.all(),
-        'quantity': quantity,
     }
     return render(request, 'products/home.html', context)
 
 
 def products(request):
-    # Calculate the cart quantity
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        quantity = sum(item.quantity for item in cart_items)
-    except Cart.DoesNotExist:
-        quantity = 0  # If cart doesn't exist, set quantity to 0
-
 
     # Pagination
     all_products = Product.objects.all().order_by('id')
@@ -50,37 +34,16 @@ def products(request):
 
     context = {
         'products': products,  # Use the paginated products here, not the Product class
-        'quantity': quantity,
     }
     return render(request, 'products/products.html', context)
 
 
 def about(request):
-    # Calculate the cart quantity
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        quantity = sum(item.quantity for item in cart_items)
-    except Cart.DoesNotExist:
-        quantity = 0  # If cart doesn't exist, set quantity to 0
 
-    context = {
-        'quantity': quantity,
-    }
-
-    return render(request, 'products/about.html', context)
+    return render(request, 'products/about.html',)
 
 
 def details(request, product_id):  #This line defines a function named details that takes two parameters: request, which is a Django HTTP request object, and product_id, which represents the ID of the product being requested.
-
-    # Calculate the cart quantity
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        quantity = sum(item.quantity for item in cart_items)
-    except Cart.DoesNotExist:
-        quantity = 0  # If cart doesn't exist, set quantity to 0
-
 
     # This line starts a try block, which allows you to catch exceptions that may occur during the execution of the code within the block.
     try:
@@ -91,7 +54,6 @@ def details(request, product_id):  #This line defines a function named details t
         raise e
     context = {
         'single_product': single_product,
-        'quantity': quantity,
         'in_cart': in_cart,
     }
     return render(request, 'products/details.html', context)
@@ -100,14 +62,6 @@ def details(request, product_id):  #This line defines a function named details t
 # this define the serach function
 def search(request):
     products = None  # Initialize products variable to None
-
-    # Calculate the cart quantity
-    try:
-        cart = Cart.objects.get(cart_id=_cart_id(request))
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        quantity = sum(item.quantity for item in cart_items)
-    except Cart.DoesNotExist:
-        quantity = 0  # If cart doesn't exist, set quantity to 0
 
     # Check if 'keyword' parameter is present in the request's GET parameters
     if 'keyword' in request.GET:
@@ -126,8 +80,8 @@ def search(request):
     # Prepare the context dictionary to pass data to the template
     context = {
         'products': products,  # Use lowercase 'products' here
-        'quantity': quantity,
     }
 
     # Render the 'products/products.html' template with the context data
     return render(request, 'products/products.html', context)
+
