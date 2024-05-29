@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "products.apps.ProductsConfig",  # added my app in order for django to search the templts
     "user.apps.UserConfig",
-    "cart.apps.CartConfig"
+    "cart.apps.CartConfig",
+    "orders.apps.OrdersConfig",
 ]
 
 MIDDLEWARE = [
@@ -149,3 +150,7 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'textnow9939@gmail.com'
 EMAIL_HOST_PASSWORD = 'qrkpsaigompfryrr'
+
+#  PAYSTACK PAYMENT
+PAYSTACK_SECRET_KEY = "sk_test_39e1cc14960881cb70f22ff0f53f2db56b2c0889"
+PAYSTACK_PUBLIC_KEY = "pk_test_59571fd5af713c22bdfc8b10d7081f092e5af31c"

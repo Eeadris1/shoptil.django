@@ -1,0 +1,27 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+<br>
+<br>
+<div class="container">
+    <div class="row mt-5">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-3">Purchase Successful!</h2>
+                    <p class="card-text text-center">We've received your order and will begin processing it shortly. Here is your payment ID {{payment.ref}}</p>
+                </div>
+            </div><br>
+            <<div class="text-center"> <!-- Center align the content -->
+                <a href="{% url 'home' %}" class="btn btn-primary btn-lg mb-3">Back Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<br>
+<br>
+{% endblock content %}

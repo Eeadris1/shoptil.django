@@ -1,0 +1,102 @@
+{% extends 'products/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container" style="margin-top: 50px;">
+    <center><i class="fas fa-check-circle" style="font-size: 72px;margin-bottom: 20px;color: #28A745;"></i></center>
+    <h2 class="text-center">Payment Successful</h2>
+	<br>
+	<div class="text-center">
+		<a href="{% url 'product' %}" class="btn btn-success">Shop more</a>
+	</div>
+</div>
+
+<div class="container" style="margin: 0 auto;width: 90%;padding: 50px;background: #f1f1f1;margin-top: 50px;margin-bottom: 50px;">
+    <div class="row invoice row-printable">
+        <div class="col-md-12">
+            <!-- col-lg-12 start here -->
+            <div class="panel panel-default plain" id="dash_0">
+                <!-- Start .panel -->
+                <div class="panel-body p30">
+                    <div class="row">
+                        <!-- Start .row -->
+                        <div class="col-lg-6">
+                            <!-- col-lg-6 start here -->
+                            <div class="invoice-logo"><img src="{% static 'products/images/icons/abslogo.jpeg' %}" alt="Invoice logo" style="max-height: 40px;"></div>
+                        </div>
+                        <!-- col-lg-6 end here -->
+                        <div class="col-lg-6">
+                            <!-- col-lg-6 start here -->
+                            <div class="invoice-from">
+                                <ul class="list-unstyled text-right">
+                                    <li><strong>Invoiced To</strong></li>
+                                    <li>{{order.full_name}}</li>
+                                    <li>{{order.full_address}}</li>
+                                    <li>{{order.city}}, {{order.state}}</li>
+                                    <li>{{order.country}}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- col-lg-6 end here -->
+                        <div class="col-lg-12">
+                            <!-- col-lg-12 start here -->
+                            <div class="invoice-details mt25">
+                                <div class="well">
+                                    <ul class="list-unstyled mb0">
+                                        <li><strong>Order</strong> #{{order.order_number}}</li>
+                                        <!-- <li><strong>Transaction</strong> #{{paid.order_number}}</li> -->
+                                        <li><strong>Order Date:</strong> {{paid.created_at}}</li>
+                                        <li><strong>Status:</strong> {{order.status}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                             <!-- Review Orders Card -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <!-- Review order details -->
+          <div class="box-element">
+            <div class="cart-row">
+              <div style="flex:2"><strong>Item</strong></div>
+              <div style="flex:1"><strong>Price</strong></div>
+              <div style="flex:1"><strong>Quantity</strong></div>
+              <div style="flex:1"><strong>Sub Total</strong></div>
+            </div>
+            {% for cart_item in cart_items %}
+            <div class="cart-row">
+              <div style="flex:2"><img class="row-image" src="{{ cart_item.product.image.url }}">
+                <a href="{% url 'detail' product_id=cart_item.product.id %}">{{ cart_item.product.name }}</a>
+              </div>
+              <div style="flex:1">${{ cart_item.product.price|floatformat:2 }}</div>
+              <div style="flex:1">
+                <div class="d-flex align-items-center">
+                  <p class="Quantity">{{ cart_item.quantity }}</p>
+                </div>
+              </div>
+              <div style="flex:1">${{ cart_item.sub_total }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+                            </div>
+                            <div class="invoice-footer mt25">
+                                <p class="text-center">Thank you for shopping with us!</p>
+                            </div>
+                        </div>
+                        <!-- col-lg-12 end here -->
+                    </div>
+                    <!-- End .row -->
+                </div>
+            </div>
+            <!-- End .panel -->
+        </div>
+        <!-- col-lg-12 end here -->
+    </div>
+    </div>
+
+
+{% endblock %}

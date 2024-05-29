@@ -1,0 +1,125 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block content %}
+<br>
+<br>
+<div class="container mt-5">
+  <h4 class="text-center mb-4">Review Your Orders and Make Payment</h4>
+  <div class="row">
+    <!-- Left side - Card sections -->
+    <div class="col-md-8">
+      <!-- Billing Address Card -->
+      <div class="card mb-4">
+        <h5 class="card-header">Billing Address</h5>
+        <div class="card-body">
+          <!-- Billing address details -->
+          <p class="card-text">{{ order.full_name }}</p>
+          <p class="card-text">{{ order.full_address }}</p>
+          <p class="card-text">{{ order.state }}, {{ order.country }}</p>
+          <p class="card-text">{{ order.city }}</p>
+          <p class="card-text">{{ order.email }}</p>
+          <p class="card-text">{{ order.phone }}</p>
+          {% if order.order_note %}
+            <p class="card-text"><strong>Order Note:</strong> {{ order.order_note }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Review Orders Card -->
+      <div class="card mb-4">
+        <h5 class="card-header">Review Orders</h5>
+        <div class="card-body">
+          <!-- Review order details -->
+          <div class="box-element">
+            <div class="cart-row">
+              <div style="flex:2"><strong>Item</strong></div>
+              <div style="flex:1"><strong>Price</strong></div>
+              <div style="flex:1"><strong>Quantity</strong></div>
+              <div style="flex:1"><strong>Sub Total</strong></div>
+            </div>
+            {% for cart_item in cart_items %}
+            <div class="cart-row">
+              <div style="flex:2"><img class="row-image" src="{{ cart_item.product.image.url }}">
+                <a href="{% url 'detail' product_id=cart_item.product.id %}">{{ cart_item.product.name }}</a>
+              </div>
+              <div style="flex:1">${{ cart_item.product.price|floatformat:2 }}</div>
+              <div style="flex:1">
+                <div class="d-flex align-items-center">
+                  <p class="Quantity">{{ cart_item.quantity }}</p>
+                </div>
+              </div>
+              <div style="flex:1">${{ cart_item.sub_total }}</div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right side - Payment summary -->
+    <div class="col-md-4">
+        <!-- Payment Method Card -->
+      <div class="card mb-4">
+        <h5 class="card-header">Payment Method</h5>
+        <div class="card-body">
+          <!-- Payment method details -->
+          <p class="card-text">Paystack</p>
+          <div class="payment-icons mt-3">
+            <a href="#" class="m-all-1">
+              <img src="{% static 'products/images/icons/paystack (2).png' %}" alt="ICON-PAY">
+            </a>
+
+            <!-- Add more payment icons here -->
+          </div>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <h5 class="card-header">Payment Summary</h5>
+        <div class="card-body">
+          <!-- Payment summary details -->
+          <div class="card-body">
+            <h6>Total: ${{ total|floatformat:2 }}</h6>
+            <h6>Tax: ${{ tax|floatformat:2 }}</h6>
+            <h6>Grand Total: ${{ grand_total|floatformat:2 }}</h6>
+          </div>
+          <!-- Payment Button -->
+                <button  onclick="payWithPaystack()" class="btn btn-primary btn-block" style="color: white;cursor:pointer;"> Make Payment </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function payWithPaystack() {
+    let currency = 'NGN';
+    let plan = "";
+    let ref = '{{ payment.ref }}';
+    let amount = '{{ payment.amount }}';
+    let orderID="{{ order.order_number }}";
+    let obj = {
+      key: 'pk_test_59571fd5af713c22bdfc8b10d7081f092e5af31c',
+      email: '{{ payment.email }}',
+      amount: '{{ amount_value }}',
+      ref: ref,
+      callback: function (response) {
+        window.location.href = "{% url 'payment' payment.ref %}";
+      },
+    };
+    if (Boolean(currency)) {
+      obj.currency = currency.toUpperCase();
+    }
+    if (Boolean(plan)) {
+      obj.plan = plan;
+    }
+    var handler = PaystackPop.setup(obj);
+    handler.openIframe();
+  }
+</script>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+{% endblock content %}
+
+
